@@ -1,5 +1,5 @@
 {
-    "name": "acts/external-login",
+    "name": "acts/external-login-bundle",
     "description": "A bundle which allows users to log in using Facebook, Twitter, Google and Raven (Cambridge University). A bridge between acts/social-api-bundle and the Symfony2 security component.",
     "keywords": ["facebook", "twitter", "login", "external", "social", "google", "raven"],
     "type": "symfony-bundle",
