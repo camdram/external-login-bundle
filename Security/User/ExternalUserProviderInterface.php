@@ -6,7 +6,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 interface ExternalUserProviderInterface extends UserProviderInterface
 {
 
-    public function loadUserByServiceAndId($service, $remote_id);
+    public function loadUserByServiceAndUsername($service, $username);
 
     public function persistUser($userinfo, $service, $access_token);
 
