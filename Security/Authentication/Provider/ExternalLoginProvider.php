@@ -69,7 +69,7 @@ class ExternalLoginProvider implements AuthenticationProviderInterface
         if (!$token->getUser()) {
             $userinfo = $service->getUserInfo($token->getAccessToken());
             try {
-                $user = $this->userProvider->loadUserByServiceAndId($token->getServiceName(), $userinfo['id']);
+                $user = $this->userProvider->loadUserByServiceAndUsername($token->getServiceName(), $userinfo['username']);
             }
             catch (UsernameNotFoundException $e) {
                 $user = $this->userProvider->persistUser($userinfo, $token->getServiceName(), $token->getAccessToken());

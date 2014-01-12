@@ -41,4 +41,19 @@ class ExternalLoginToken extends AbstractToken
         return $this->getAttribute('access_token');
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
+    {
+        return serialize(
+            array(
+                $this->getUser(),
+                $this->isAuthenticated(),
+                $this->getRoles(),
+                $this->getAttributes()
+            )
+        );
+    }
+
 }
