@@ -4,11 +4,10 @@ namespace Acts\ExternalLoginBundle\Security\Firewall;
 use Acts\ExternalLoginBundle\Security\Authentication\Token\ExternalLoginToken;
 use Acts\ExternalLoginBundle\Security\Service\ServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\Firewall\ListenerInterface;
 use Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationFailureHandlerInterface;
@@ -16,11 +15,10 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerI
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Http\HttpUtils;
-use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Security\Http\RememberMe\RememberMeServicesInterface;
-use Symfony\Component\Security\Core\Authentication\Token\AnonymousToken;
+use Symfony\Component\Security\Http\SecurityEvents;
 
 use Acts\ExternalLoginBundle\Security\Service\ServiceProvider;
 
@@ -142,6 +140,12 @@ class ExternalLoginListener implements ListenerInterface
             $this->sessionStrategy->onAuthentication($request, $token);
 
             $this->securityContext->setToken($token);
+
+            if (null !== $this->dispatcher) {
+                $loginEvent = new InteractiveLoginEvent($request, $token);
+                $this->dispatcher->dispatch(SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
+            }
+
             $response = $this->successHandler->onAuthenticationSuccess($request, $token);
         }
         catch (AuthenticationException $e) {
