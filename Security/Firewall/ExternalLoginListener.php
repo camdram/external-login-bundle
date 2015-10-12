@@ -5,7 +5,7 @@ use Acts\ExternalLoginBundle\Security\Authentication\Token\ExternalLoginToken;
 use Acts\ExternalLoginBundle\Security\Service\ServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\Security\Http\Firewall\ListenerInterface;
@@ -38,7 +38,7 @@ class ExternalLoginListener implements ListenerInterface
      */
     private $urls;
 
-    private $securityContext;
+    private $tokenStorage;
     private $sessionStrategy;
     private $dispatcher;
     private $successHandler;
@@ -47,7 +47,7 @@ class ExternalLoginListener implements ListenerInterface
     /**
      * Constructor.
      *
-     * @param SecurityContextInterface               $securityContext       A SecurityContext instance
+     * @param TokenStorageInterface                  $tokenStorage          Token storage
      * @param AuthenticationManagerInterface         $authenticationManager An AuthenticationManagerInterface instance
      * @param SessionAuthenticationStrategyInterface $sessionStrategy
      * @param HttpUtils                              $httpUtils             An HttpUtilsInterface instance
@@ -61,13 +61,13 @@ class ExternalLoginListener implements ListenerInterface
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct(SecurityContextInterface $securityContext, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, $providerKey, AuthenticationSuccessHandlerInterface $successHandler, AuthenticationFailureHandlerInterface $failureHandler, array $options = array(), LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null)
+    public function __construct(TokenStorageInterface $tokenStorage, AuthenticationManagerInterface $authenticationManager, SessionAuthenticationStrategyInterface $sessionStrategy, HttpUtils $httpUtils, $providerKey, AuthenticationSuccessHandlerInterface $successHandler, AuthenticationFailureHandlerInterface $failureHandler, array $options = array(), LoggerInterface $logger = null, EventDispatcherInterface $dispatcher = null)
     {
         if (empty($providerKey)) {
             throw new \InvalidArgumentException('$providerKey must not be empty.');
         }
 
-        $this->securityContext = $securityContext;
+        $this->tokenStorage = $tokenStorage;
         $this->authenticationManager = $authenticationManager;
         $this->sessionStrategy = $sessionStrategy;
         $this->providerKey = $providerKey;
@@ -139,7 +139,7 @@ class ExternalLoginListener implements ListenerInterface
 
             $this->sessionStrategy->onAuthentication($request, $token);
 
-            $this->securityContext->setToken($token);
+            $this->tokenStorage->setToken($token);
 
             if (null !== $this->dispatcher) {
                 $loginEvent = new InteractiveLoginEvent($request, $token);
