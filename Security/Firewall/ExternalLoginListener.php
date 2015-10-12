@@ -47,7 +47,7 @@ class ExternalLoginListener implements ListenerInterface
     /**
      * Constructor.
      *
-     * @param TokenStorageInterface                  $tokenStorage          Token storage
+     * @param TokenStorageInterface               $tokenStorage       A TokenStorageInterface instance
      * @param AuthenticationManagerInterface         $authenticationManager An AuthenticationManagerInterface instance
      * @param SessionAuthenticationStrategyInterface $sessionStrategy
      * @param HttpUtils                              $httpUtils             An HttpUtilsInterface instance
